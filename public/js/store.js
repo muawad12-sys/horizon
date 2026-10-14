@@ -298,7 +298,7 @@ function heroHTML() {
     </div>`;
   }
   const n = b.length;
-  return `<div class="slides" id="slides" aria-live="off">${b.map((s, i) => `
+  return `<div class="slides-frame"><div class="slides" id="slides" aria-live="off">${b.map((s, i) => `
       <div class="slide" role="group" aria-roledescription="شريحة" aria-label="${i + 1} من ${n}" ${i ? 'aria-hidden="true"' : ''}>
         <img src="${esc(s.image.url)}" alt="" width="1920" height="1080" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}>
         <div class="slide-copy wrap">
@@ -310,7 +310,7 @@ function heroHTML() {
     ${n > 1 ? `<div class="hero-ctrl wrap">
       <div class="dots">${b.map((_, i) => `<button type="button" data-dot="${i}" aria-label="الشريحة ${i + 1}" ${i ? '' : 'aria-current="true"'}></button>`).join('')}</div>
       <button type="button" id="heroPause" class="hero-pause" aria-label="إيقاف التمرير التلقائي">❚❚</button>
-    </div>` : ''}`;
+    </div>` : ''}</div>`;
 }
 
 let slider = null;

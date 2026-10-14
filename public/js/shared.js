@@ -132,10 +132,7 @@ export const ICON = {
 // Theme: follows the OS until the visitor picks one; the choice is remembered.
 export function toggleTheme() {
   const root = document.documentElement;
-  const dark = root.dataset.theme
-    ? root.dataset.theme === 'dark'
-    : matchMedia('(prefers-color-scheme: dark)').matches;
-  root.dataset.theme = dark ? 'light' : 'dark';
+  root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; // light is the default
   try { localStorage.setItem('np_theme', root.dataset.theme); } catch {}
   syncThemeColor();
 }
