@@ -1,0 +1,16 @@
+rules_version = '2';
+
+// Images are public to read; only admins (uid in Firestore /admins) can upload or delete.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{folder}/{allPaths=**} {
+      allow read: if folder in ['products', 'banners'];
+      allow write: if folder in ['products', 'banners']
+        && request.auth != null
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
+        && (request.resource == null
+            || (request.resource.size < 5 * 1024 * 1024
+                && request.resource.contentType.matches('image/.*')));
+    }
+  }
+}

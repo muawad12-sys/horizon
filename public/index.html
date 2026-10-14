@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NICHE PERFUMES — ديودرنت بروح العطور النيش</title>
+  <meta name="description" content="NICHE PERFUMES — ديودرنت بروائح مستوحاة من أشهر العطور. رجالي ونسائي، توصيل لكل المحافظات والدفع عند الاستلام.">
+  <meta name="theme-color" content="#fbfaf7">
+  <script>try{var t=localStorage.getItem('np_theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Jost:wght@300;400;500&family=Reem+Kufi:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/store.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='22' fill='%23141414'/%3E%3Crect x='15.5' y='3.5' width='9' height='21' fill='none' stroke='%23141414'/%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip" href="#main">تخطَّ إلى المحتوى</a>
+
+  <div class="topbar" id="topbar">توصيل لكل المحافظات · الدفع عند الاستلام</div>
+
+  <header class="header" id="header">
+    <div class="wrap header-in">
+      <a href="#/" class="header-logo" aria-label="NICHE PERFUMES — الرئيسية" id="logo"></a>
+      <nav class="header-nav" aria-label="الأقسام">
+        <a href="#/?g=men">رجالي</a>
+        <a href="#/?g=women">نسائي</a>
+        <a href="#/">الكل</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn ico" id="searchBtn" type="button" aria-label="بحث"></button>
+        <button class="icon-btn ico" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي"></button>
+        <button class="icon-btn ico" id="cartBtn" type="button" aria-label="السلة" aria-haspopup="dialog" aria-controls="cart">
+          <span class="cart-count num" id="cartCount" hidden>0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1"></main>
+
+  <footer class="footer">
+    <div class="wrap footer-in">
+      <div id="footLogo"></div>
+      <p class="muted">ديودرنت بروائح مستوحاة من عطور النيش. ثبات يدوم، بسعر يناسبك.</p>
+      <div class="footer-links" id="footLinks"></div>
+      <p class="eyebrow">© <span class="num" id="year"></span> NICHE PERFUMES</p>
+    </div>
+  </footer>
+
+  <div class="overlay" id="overlay" hidden></div>
+  <aside class="drawer" id="cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle" hidden>
+    <div class="drawer-head">
+      <h2 id="cartTitle">السلة</h2>
+      <button class="icon-btn ico" type="button" id="cartClose" aria-label="إغلاق السلة"></button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="drawer-foot" id="cartFoot"></div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/js/store.js"></script>
+</body>
+</html>

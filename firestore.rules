@@ -1,0 +1,128 @@
+rules_version = '2';
+
+// NICHE PERFUMES — Firestore security rules
+// - products / banners / settings: public read, admin write.
+// - orders: anyone may create (validated hard below); only admins read/update.
+// - A guest order must be written in ONE transaction that also:
+//     * bumps counters/orders.seq by 1 (order id = "NP-" + seq)
+//     * decrements each product's stock by exactly the ordered qty
+//   and every line price must equal the live product price.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function str(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max;
+    }
+
+    function iraqiPhone(v) {
+      return v is string && v.matches('^[+]9647[0-9]{9}$');
+    }
+
+    // ── Admins: a signed-in user may only check their own admin doc ──
+    match /admins/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, write: if false; // managed from the Firebase console only
+    }
+
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /banners/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Order counter ──
+    match /counters/orders {
+      allow get: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.resource.data.keys().hasOnly(['seq'])
+        && request.resource.data.seq == resource.data.seq + 1
+        && existsAfter(/databases/$(database)/documents/orders/$('NP-' + string(request.resource.data.seq)))
+      );
+    }
+
+    // ── Products ──
+    match /products/{id} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || guestStockUpdate(id);
+    }
+
+    // Guest may only lower stock by the qty of a brand-new order created in the same transaction.
+    function guestStockUpdate(id) {
+      let nd = request.resource.data;
+      let orderPath = /databases/$(database)/documents/orders/$(nd.lastOrder);
+      return nd.diff(resource.data).affectedKeys().hasOnly(['stock', 'lastOrder'])
+        && nd.lastOrder is string
+        && nd.stock is int
+        && nd.stock >= 0
+        && !exists(orderPath)
+        && existsAfter(orderPath)
+        && resource.data.stock - nd.stock == getAfter(orderPath).data.qty[id];
+    }
+
+    // ── Orders ──
+    match /orders/{orderId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if validOrder(orderId, request.resource.data);
+    }
+
+    function validOrder(orderId, d) {
+      let c = d.customer;
+      let n = d.items.size();
+      return d.keys().hasOnly(['customer', 'items', 'qty', 'subtotal', 'delivery', 'total', 'status', 'createdAt'])
+        && d.keys().hasAll(['customer', 'items', 'qty', 'subtotal', 'delivery', 'total', 'status', 'createdAt'])
+        && c.keys().hasOnly(['name', 'phone', 'phone2', 'gov', 'area', 'landmark', 'notes'])
+        && c.keys().hasAll(['name', 'phone', 'phone2', 'gov', 'area', 'landmark', 'notes'])
+        && str(c.name, 3, 80)
+        && iraqiPhone(c.phone)
+        && (c.phone2 == '' || iraqiPhone(c.phone2))
+        && str(c.gov, 3, 20) // must also have a fee in settings/store.shipping (checked below)
+        && str(c.area, 2, 120)
+        && str(c.landmark, 2, 160)
+        && str(c.notes, 0, 500)
+        && d.status == 'new'
+        && d.createdAt == request.time
+        // max 5 different products per order: keeps the whole transaction under
+        // Firestore's 1,000-expressions-per-request rules limit
+        && d.items is list && n >= 1 && n <= 5
+        && d.qty is map && d.qty.size() == n
+        && orderId == 'NP-' + string(getAfter(/databases/$(database)/documents/counters/orders).data.seq)
+        && d.delivery is int
+        && d.delivery == get(/databases/$(database)/documents/settings/store).data.shipping[c.gov]
+        && item(d, orderId, 0) && item(d, orderId, 1) && item(d, orderId, 2)
+        && item(d, orderId, 3) && item(d, orderId, 4)
+        && d.subtotal == line(d, 0) + line(d, 1) + line(d, 2) + line(d, 3) + line(d, 4)
+        && d.total == d.subtotal + d.delivery;
+    }
+
+    function item(d, orderId, i) {
+      return i >= d.items.size() || itemOk(d, orderId, d.items[i]);
+    }
+
+    function itemOk(d, orderId, it) {
+      let p = getAfter(/databases/$(database)/documents/products/$(it.id)).data;
+      return it.keys().hasOnly(['id', 'code', 'price', 'qty'])
+        && it.code == p.code
+        && it.qty is int && it.qty >= 1 && it.qty <= 10
+        && d.qty[it.id] == it.qty
+        && p.visible == true
+        && p.price is int && p.price > 0
+        && it.price == p.price
+        && p.lastOrder == orderId; // proves stock was decremented in this transaction
+    }
+
+    function line(d, i) {
+      return i < d.items.size() ? d.items[i].price * d.items[i].qty : 0;
+    }
+  }
+}

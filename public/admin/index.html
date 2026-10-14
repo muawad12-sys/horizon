@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>لوحة التحكم — NICHE PERFUMES</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#fbfaf7">
+  <script>try{var t=localStorage.getItem('np_theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Jost:wght@300;400;500&family=Reem+Kufi:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect width='28' height='28' fill='%23fff'/%3E%3Crect x='3' y='3' width='10' height='22' fill='%23141414'/%3E%3Crect x='15.5' y='3.5' width='9' height='21' fill='none' stroke='%23141414'/%3E%3C/svg%3E">
+</head>
+<body>
+  <!-- Login -->
+  <section class="auth" id="login" hidden>
+    <form class="auth-card" id="loginForm" novalidate>
+      <div class="auth-logo" data-logo></div>
+      <h1>لوحة التحكم</h1>
+      <div class="field">
+        <label for="email">البريد الإلكتروني</label>
+        <input class="input" id="email" name="email" type="email" dir="ltr" autocomplete="username" spellcheck="false" required>
+      </div>
+      <div class="field">
+        <label for="password">كلمة المرور</label>
+        <input class="input" id="password" name="password" type="password" dir="ltr" autocomplete="current-password" required>
+      </div>
+      <p class="err" id="loginErr" role="alert"></p>
+      <button class="btn btn-block" type="submit" id="loginBtn">دخول</button>
+    </form>
+  </section>
+
+  <!-- Not an admin -->
+  <section class="auth" id="denied" hidden>
+    <div class="auth-card">
+      <div class="auth-logo" data-logo></div>
+      <h1>ما عندك صلاحية</h1>
+      <p class="muted">هذا الحساب مو مضاف كأدمن. أضف الـ UID التالي لمجموعة <code>admins</code> في Firestore:</p>
+      <code class="uid" id="uid" dir="ltr"></code>
+      <button class="btn btn-ghost btn-block" type="button" data-logout>تسجيل الخروج</button>
+    </div>
+  </section>
+
+  <!-- App -->
+  <div id="app" hidden>
+    <header class="a-header">
+      <div class="a-wrap a-header-in">
+        <a href="/" class="a-logo" data-logo aria-label="فتح المتجر" target="_blank" rel="noopener"></a>
+        <span class="a-tag">لوحة التحكم</span>
+        <div class="a-header-actions">
+          <button class="icon-btn ico" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي"></button>
+          <button class="btn btn-ghost btn-sm" type="button" data-logout>خروج</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="a-wrap a-main">
+      <section class="stats" aria-label="أرقام سريعة">
+        <div class="stat"><span class="stat-label">طلبات جديدة</span><strong class="num" id="sNew">–</strong></div>
+        <div class="stat"><span class="stat-label">طلبات اليوم</span><strong class="num" id="sToday">–</strong></div>
+        <div class="stat"><span class="stat-label">مبيعات الشهر</span><strong id="sMonth">–</strong></div>
+      </section>
+
+      <nav class="tabs" role="tablist" aria-label="الأقسام">
+        <button role="tab" type="button" data-tab="orders" aria-selected="true">الطلبات <span class="tab-badge num" id="newBadge" hidden></span></button>
+        <button role="tab" type="button" data-tab="products" aria-selected="false">المنتجات</button>
+        <button role="tab" type="button" data-tab="banners" aria-selected="false">البنرات</button>
+        <button role="tab" type="button" data-tab="shipping" aria-selected="false">أجور التوصيل</button>
+        <button role="tab" type="button" data-tab="settings" aria-selected="false">الإعدادات</button>
+      </nav>
+
+      <section class="panel" id="tab-orders" role="tabpanel"></section>
+      <section class="panel" id="tab-products" role="tabpanel" hidden></section>
+      <section class="panel" id="tab-banners" role="tabpanel" hidden></section>
+      <section class="panel" id="tab-shipping" role="tabpanel" hidden></section>
+      <section class="panel" id="tab-settings" role="tabpanel" hidden></section>
+    </main>
+  </div>
+
+  <dialog class="sheet" id="productDlg" aria-labelledby="productDlgTitle"></dialog>
+  <dialog class="sheet" id="bannerDlg" aria-labelledby="bannerDlgTitle"></dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>
