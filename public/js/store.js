@@ -2,7 +2,7 @@ import {
   db, collection, doc, getDocs, getDoc, query, where, runTransaction, serverTimestamp,
 } from './firebase.js';
 import {
-  GOVS, GENDER, MAX_LINES, MAX_QTY, ICON, LOGO, boxSVG, esc, money, num, normalizePhone,
+  GOVS, GENDER, MAX_LINES, MAX_QTY, ICON, LOGO, logoSVG, boxSVG, esc, money, num, normalizePhone,
   prettyPhone, toLatinDigits, waLink, store, toast, toggleTheme, syncThemeColor,
 } from './shared.js';
 
@@ -26,7 +26,7 @@ const safeLink = (u) => (/^(https?:\/\/|#|\/)/.test(u || '') ? u : '#collection'
 
 /* ───────────────────────── Chrome ───────────────────────── */
 $('#logo').innerHTML = LOGO;
-$('#footLogo').innerHTML = LOGO;
+$('#footLogo').innerHTML = logoSVG('currentColor', 'class="foot-logo" role="img" aria-label="NICHE PERFUMES"');
 $('#year').textContent = new Date().getFullYear();
 $('#searchBtn').innerHTML = ICON.search;
 $('#themeBtn').innerHTML = ICON.moon;

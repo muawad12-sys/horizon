@@ -46,33 +46,70 @@ export const waLink = (phone, text = '') =>
 
 export const productTitle = (p) => `${p.code} — ${GENDER[p.gender] || ''}`;
 
-// Deodorant carton drawn in SVG: black = men, white = women.
+// ── Brand logo: two interlocking triple-line rings under a bar (from the real packaging) ──
+let uid = 0;
+const LOGO_FONT = "'Helvetica Neue', Arial, sans-serif";
+// Inner SVG content of the logo in a 120×114 box. `color` fills strokes/text.
+function logoInner(color, withText) {
+  const id = `npl${++uid}`;
+  const L = [45.5, 62];
+  const R = [74.5, 62];
+  const ring = (c) => [[28.6, 3.2], [23.4, 2.4], [18.6, 2.4]]
+    .map(([r, w]) => `<circle cx="${c[0]}" cy="${c[1]}" r="${r}" stroke-width="${w}"/>`).join('');
+  // Knock-out of the other ring's band, top half (sweep 1) or bottom half (sweep 0): makes the rings interlock.
+  const half = (c, top) => `<path d="M${c[0] - 23.6} ${c[1]}A23.6 23.6 0 0 ${top ? 1 : 0} ${c[0] + 23.6} ${c[1]}" stroke="#000" stroke-width="15" fill="none"/>`;
+  return `<defs>
+      <mask id="${id}a" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="114"><rect width="120" height="114" fill="#fff"/>${half(R, true)}</mask>
+      <mask id="${id}b" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="114"><rect width="120" height="114" fill="#fff"/>${half(L, false)}</mask>
+    </defs>
+    <g fill="none" stroke="${color}">
+      <g mask="url(#${id}a)">${ring(L)}</g>
+      <g mask="url(#${id}b)">${ring(R)}</g>
+    </g>
+    <rect x="47" y="27.4" width="26" height="4.4" fill="${color}"/>
+    ${withText ? `<g fill="${color}" font-family="${LOGO_FONT}" font-weight="700" text-anchor="middle">
+      <text x="60" y="23" font-size="11.5" letter-spacing=".2">NICHE</text>
+      <text x="60" y="106" font-size="9" letter-spacing=".3">PERFUMES</text>
+    </g>` : ''}`;
+}
+// Full stacked logo (NICHE / rings / PERFUMES).
+export const logoSVG = (color = 'currentColor', attrs = '') =>
+  `<svg viewBox="0 0 120 114" xmlns="http://www.w3.org/2000/svg" ${attrs}>${logoInner(color, true)}</svg>`;
+// Rings + bar only (for small sizes).
+export const logoMarkSVG = (color = 'currentColor', attrs = '') =>
+  `<svg viewBox="14 23 92 71" xmlns="http://www.w3.org/2000/svg" ${attrs}>${logoInner(color, false)}</svg>`;
+
+// Deodorant carton drawn in SVG, modelled on the real box: black = men, white = women.
 export function boxSVG(code = '', gender = 'men', { label = true } = {}) {
   const men = gender !== 'women';
   const c = men
-    ? { front: '#151515', side: '#050505', top: '#2b2b2b', ink: '#f3f0ea', soft: '#8d887f', edge: '#000' }
-    : { front: '#fbfaf6', side: '#e4e0d7', top: '#ffffff', ink: '#151515', soft: '#8d887f', edge: '#d6d1c6' };
-  const t = esc(code || '—');
+    ? { front: '#121212', side: '#050505', top: '#262626', ink: '#ececec', soft: '#9a9a9a', edge: '#000' }
+    : { front: '#f8f8f6', side: '#e2e2de', top: '#ffffff', ink: '#1a1a1a', soft: '#8a8a8a', edge: '#d4d4cf' };
+  const t = esc(code || '');
+  // little "text" bars standing in for the French notes printed on the box
+  const notes = [[30, 36], [42, 22], [52, 32], [62, 20], [72, 34], [82, 26]]
+    .map(([y, w], i) => `<rect x="${99 - w / 2}" y="${148 + y * 0.62 + (i % 2 ? 0 : 3)}" width="${w}" height="1.5" fill="${c.soft}" opacity=".7"/>`).join('');
   return `<svg class="box-svg" viewBox="0 0 220 320" role="img" aria-label="علبة ${t} ${men ? 'رجالي' : 'نسائي'}" xmlns="http://www.w3.org/2000/svg">
   <ellipse cx="112" cy="300" rx="78" ry="7" fill="#000" opacity=".12"/>
-  <polygon points="48,40 74,24 176,24 150,40" fill="${c.top}" stroke="${c.edge}" stroke-width=".8"/>
-  <polygon points="150,40 176,24 176,276 150,292" fill="${c.side}" stroke="${c.edge}" stroke-width=".8"/>
+  <polygon points="48,40 72,26 174,26 150,40" fill="${c.top}" stroke="${c.edge}" stroke-width=".8"/>
+  <polygon points="150,40 174,26 174,278 150,292" fill="${c.side}" stroke="${c.edge}" stroke-width=".8"/>
   <rect x="48" y="40" width="102" height="252" fill="${c.front}" stroke="${c.edge}" stroke-width=".8"/>
-  <g fill="${c.ink}" font-family="Jost, sans-serif" text-anchor="middle" direction="ltr">
-    <text x="99" y="76" font-size="13" letter-spacing="4.5" font-weight="500">NICHE</text>
-    <text x="99" y="89" font-size="6" letter-spacing="3.2" fill="${c.soft}">PERFUMES</text>
-    <line x1="84" y1="104" x2="114" y2="104" stroke="${c.ink}" stroke-width=".7" opacity=".6"/>
-    <text x="99" y="178" font-size="${t.length > 4 ? 26 : 36}" font-weight="300" letter-spacing="1.5">${t}</text>
-    <text x="99" y="200" font-size="6.5" letter-spacing="3" fill="${c.soft}">DEODORANT</text>
-    ${label ? `<text x="99" y="272" font-size="6" letter-spacing="2.6">${men ? 'POUR HOMME' : 'POUR FEMME'}</text>` : ''}
+  <rect x="55.5" y="49" width="87" height="234" fill="none" stroke="${c.ink}" stroke-width=".9"/>
+  <svg x="78" y="58" width="42" height="40" viewBox="0 0 120 114">${logoInner(c.ink, true)}</svg>
+  <g fill="${c.ink}" font-family="${LOGO_FONT}" text-anchor="middle" direction="ltr">
+    <text x="99" y="${t.length > 4 ? 139 : 141}" font-size="${t.length > 4 ? 11 : 15}" font-weight="700">${t}</text>
+    <rect x="80" y="146" width="38" height="1.1"/>
+    ${label ? `${notes}
+    <text x="99" y="264" font-size="8.6" font-weight="700">DÉODORANT</text>
+    <text x="99" y="270.5" font-size="4.6" font-weight="700">VAPORISATEUR SPRAY</text>
+    <text x="64" y="277" font-size="4.2" text-anchor="start">150 ml</text>
+    <text x="134" y="277" font-size="4.2" text-anchor="end">5.10 FL.OZ.</text>` : ''}
   </g>
-  <polygon points="150,40 176,24 176,276 150,292" fill="url(#np-shine)" opacity=".35"/>
-  <defs><linearGradient id="np-shine" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></linearGradient></defs>
 </svg>`;
 }
 
 export const LOGO = `<span class="logo" translate="no">
-  <svg class="logo-mark" viewBox="0 0 28 28" aria-hidden="true"><rect x="3" y="3" width="10" height="22" fill="currentColor"/><rect x="15.5" y="3.5" width="9" height="21" fill="none" stroke="currentColor"/></svg>
+  ${logoMarkSVG('currentColor', 'class="logo-mark" aria-hidden="true"')}
   <span class="logo-text"><b>NICHE</b><small>PERFUMES</small></span>
 </span>`;
 

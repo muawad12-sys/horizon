@@ -154,10 +154,10 @@ button { cursor: pointer; }
 
 /* Logo */
 .logo { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); direction: ltr; }
-.logo-mark { width: 26px; height: 26px; }
-.logo-text { display: grid; line-height: 1; font-family: var(--f-num); }
-.logo-text b { font-weight: 500; font-size: 17px; letter-spacing: .32em; }
-.logo-text small { font-size: 8.5px; letter-spacing: .52em; color: var(--ink-2); margin-top: 4px; }
+.logo-mark { width: 38px; height: 29px; flex: none; }
+.logo-text { display: grid; justify-items: center; line-height: 1; font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; }
+.logo-text b { font-weight: 700; font-size: 17px; letter-spacing: .06em; }
+.logo-text small { font-size: 9.5px; letter-spacing: .14em; margin-top: 3px; }
 
 /* Skeleton */
 .skel { background: linear-gradient(90deg, var(--surface-2), var(--line), var(--surface-2)); background-size: 200% 100%; animation: skel 1.4s linear infinite; }

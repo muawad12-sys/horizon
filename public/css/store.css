@@ -253,3 +253,4 @@ input[dir="ltr"]::placeholder { text-align: right; }
 .footer-links a:hover { color: var(--bronze); }
 .footer-links .ico svg { width: 18px; height: 18px; }
 .btn .ico svg { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.foot-logo { width: 92px; height: auto; color: var(--ink); }

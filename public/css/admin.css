@@ -6,7 +6,8 @@ code { font-family: var(--f-num); font-size: .92em; background: var(--surface-2)
 .auth { min-height: 100dvh; display: grid; place-items: center; padding: 24px var(--gutter); }
 .auth-card { width: min(400px, 100%); display: grid; gap: 16px; background: var(--surface); border: 1px solid var(--line); padding: 32px 24px; }
 .auth-card h1 { font-size: 24px; }
-.auth-logo { margin-bottom: 8px; }
+.auth-logo { margin-bottom: 8px; color: var(--ink); }
+.auth-logo svg { width: 96px; height: auto; }
 .uid { display: block; padding: 10px; word-break: break-all; user-select: all; }
 
 /* Header */

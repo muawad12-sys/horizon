@@ -9,7 +9,7 @@ import {
   getStorage, connectStorageEmulator, ref, uploadBytes, getDownloadURL, deleteObject,
 } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js';
 import {
-  GOVS, govName, GENDER, STATUS, ICON, LOGO, boxSVG, esc, money, num, normalizePhone, prettyPhone,
+  GOVS, govName, GENDER, STATUS, ICON, LOGO, logoSVG, boxSVG, esc, money, num, normalizePhone, prettyPhone,
   waLink, toast, toggleTheme, syncThemeColor, fmtDate,
 } from './shared.js';
 
@@ -26,6 +26,7 @@ const S = { orders: [], products: [], banners: [], settings: { shipping: {} }, f
 let unsubs = [];
 
 $$('[data-logo]').forEach((el) => { el.innerHTML = LOGO; });
+$$('[data-logo-full]').forEach((el) => { el.innerHTML = logoSVG('currentColor', 'role="img" aria-label="NICHE PERFUMES"'); });
 $('#themeBtn').innerHTML = ICON.moon;
 $('#themeBtn').addEventListener('click', toggleTheme);
 syncThemeColor();
